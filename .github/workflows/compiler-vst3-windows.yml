@@ -1,0 +1,51 @@
+name: Compiler NOIRNUIT REVERSE VST3 (Windows)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+
+jobs:
+  build-windows-vst3:
+    name: VST3 Windows x64
+    runs-on: windows-2022
+    permissions:
+      contents: read
+    steps:
+      - name: Recuperer le projet
+        uses: actions/checkout@v4
+
+      - name: Configurer MSVC, CMake et JUCE 8.0.13
+        shell: pwsh
+        run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DBUILD_TESTING=ON
+
+      - name: Compiler le VST3
+        shell: pwsh
+        run: cmake --build build --config Release --target NoirnuitReverse_VST3 reverse-engine-tests --parallel 4
+
+      - name: Executer les tests du moteur
+        shell: pwsh
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      - name: Trouver et empaqueter le VST3
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $vst = Get-ChildItem -Path build -Directory -Filter 'NOIRNUIT REVERSE.vst3' -Recurse | Select-Object -First 1
+          if (-not $vst) {
+            $vst = Get-ChildItem -Path build -Directory -Filter '*.vst3' -Recurse | Select-Object -First 1
+          }
+          if (-not $vst) { throw 'Le dossier VST3 compile est introuvable' }
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          Copy-Item -LiteralPath $vst.FullName -Destination dist -Recurse -Force
+          $zip = Join-Path $PWD 'NOIRNUIT_REVERSE_Windows_x64.zip'
+          Compress-Archive -LiteralPath (Join-Path 'dist' $vst.Name) -DestinationPath $zip -Force
+          Write-Host "Archive generee : $zip"
+
+      - name: Publier le VST3 a telecharger
+        uses: actions/upload-artifact@v4
+        with:
+          name: NOIRNUIT_REVERSE_Windows_x64
+          path: NOIRNUIT_REVERSE_Windows_x64.zip
+          if-no-files-found: error
+          retention-days: 30
