@@ -1,14 +1,23 @@
-# NOIRNUIT REVERSE — VST3 (prototype fonctionnel v1.0)
+# NOIRNUIT REVERSE — VST3 (interface PRO v2.0)
 
 Effet original de **reverse reverb** pour voix et instruments, développé en **C++ / JUCE**.
 Compatible VST3 Windows x64 après compilation. Une application standalone est aussi incluse dans la configuration du projet. Inspiré du *flux de travail* d'AtmosRiser de WaveAtmos, **sans reprendre son code, ses fichiers, sa marque ou son interface graphique**. Aucune affiliation avec WaveAtmos.
+
+## Version 2.0 — interface NOIRNUIT premium
+
+La v2 refond **uniquement l’interface** : fond analogique noir, halo violet, vrais potentiomètres métalliques, waveform centrale qui affiche le rendu audio disponible, cartes d’effets, boutons d’action et champs de presets. Aucune modification de `PluginProcessor` ou `ReverseEngine` n’est requise.
+
+Les contrôles sont reliés aux **paramètres existants** : `bars`, `decay`, `tone`, `width`, `sibilance`, `vocal`, `phone`, `chorus`, `drive`, `tremolo`. Le design de référence comporte des réglages absents du moteur actuel (ex. *Attack*, *Fade*, *Mix*). Ils n’ont pas été ajoutés artificiellement pour éviter de créer des faux boutons.
+
+Pour modifier le dépôt GitHub déjà créé, utiliser **MISE_A_JOUR_GITHUB.md**. Son workflow existant construira automatiquement la v2 à chaque commit sur `main`.
 
 ## Fichiers fournis
 
 - `Source/ReverseEngine.*` : moteur DSP stéréo indépendant de JUCE, **testé ici**.
 - `Source/PluginProcessor.*` : capture audio de la piste, lecture du BPM, paramètres, import de fichiers, préécoute, WAV 24 bits, sauvegarde d'état.
-- `Source/PluginEditor.*` : interface graphique, 4 macros, quatre effets, presets, drag & drop de fichier et export.
-- `CMakeLists.txt` : génération VST3 et standalone avec JUCE.
+- `Source/PluginEditor.*` : nouvelle interface PRO JUCE (look métallisé noir/violet, waveform, vrais potentiomètres, cartes effets, presets, capture, import, drag & drop et export).
+- `Assets/noirnuit_surface.png` : texture originale intégrée au plugin avec `juce_add_binary_data`.
+- `CMakeLists.txt` : génération VST3 et standalone avec JUCE, encodage UTF-8 sous MSVC.
 - `BUILD_WINDOWS.bat` : compilation Windows et copie du VST3 dans le répertoire système.
 - `Tools/OfflineRenderer.cpp` : outil en ligne de commande pour tester le moteur sans VST3.
 - `Tests/test_engine.cpp` : tests automatiques DSP.

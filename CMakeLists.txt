@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(NoirnuitReverse VERSION 1.0.0 LANGUAGES CXX)
+project(NoirnuitReverse VERSION 2.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -31,7 +31,12 @@ juce_add_plugin(NoirnuitReverse
     VST3_CATEGORIES Fx Reverb
     COPY_PLUGIN_AFTER_BUILD FALSE)
 
+if(MSVC)
+    target_compile_options(NoirnuitReverse PRIVATE /utf-8)
+endif()
+
 juce_generate_juce_header(NoirnuitReverse)
+juce_add_binary_data(NoirnuitVisuals SOURCES Assets/noirnuit_surface.png)
 target_sources(NoirnuitReverse PRIVATE
     Source/PluginProcessor.cpp
     Source/PluginProcessor.h
@@ -46,6 +51,7 @@ target_compile_definitions(NoirnuitReverse PUBLIC
     JUCE_VST3_CAN_REPLACE_VST2=0)
 
 target_link_libraries(NoirnuitReverse PRIVATE
+    NoirnuitVisuals
     juce::juce_audio_utils
     juce::juce_audio_processors
     juce::juce_dsp

@@ -2,7 +2,18 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include <atomic>
+#include <array>
 #include <memory>
+
+class NoirnuitLookAndFeel final : public juce::LookAndFeel_V4
+{
+public:
+    void drawRotarySlider(juce::Graphics&, int, int, int, int, float, float, float, juce::Slider&) override;
+    void drawButtonBackground(juce::Graphics&, juce::Button&, const juce::Colour&, bool, bool) override;
+    void drawButtonText(juce::Graphics&, juce::TextButton&, bool, bool) override;
+    void drawComboBox(juce::Graphics&, int, int, bool, int, int, int, int, juce::ComboBox&) override;
+    void positionComboBoxText(juce::ComboBox&, juce::Label&) override;
+};
 
 class NoirnuitReverseAudioProcessorEditor final : public juce::AudioProcessorEditor,
                                                   private juce::Thread,
@@ -46,6 +57,9 @@ private:
     void paintWaveform(juce::Graphics&, juce::Rectangle<float> bounds);
 
     NoirnuitReverseAudioProcessor& processor;
+    NoirnuitLookAndFeel skin;
+    juce::Image backdrop;
+    float animationPhase = 0.0f;
     juce::ComboBox factoryPresets, lengthChoice;
     juce::TextButton captureButton, liveButton, importButton;
     juce::TextButton vocalButton, phoneButton, chorusButton, driveButton, tremoloButton;
